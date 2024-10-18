@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,13 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+        if self.count < self.items.len() {
+            self.items[self.count] = value;
+        } else {
+            self.items.push(value);
+        }
+        self.bubble_up(self.count);
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -56,9 +61,55 @@ where
         self.left_child_idx(idx) + 1
     }
 
+    fn bubble_up(&mut self, idx: usize) {
+        let mut current_idx = idx;
+        while current_idx > 1 {
+            let parent_idx = self.parent_idx(current_idx);
+            if (self.comparator)(&self.items[current_idx], &self.items[parent_idx]) {
+                self.items.swap(current_idx, parent_idx);
+                current_idx = parent_idx;
+            } else {
+                break;
+            }
+        }
+    }
+
+    pub fn remove(&mut self) -> Option<T> {
+        if self.is_empty() {
+            return None;
+        }
+        let result = std::mem::take(&mut self.items[1]); // Get the root element
+        self.count -= 1;
+        if self.count > 0 {
+            self.items[1] = std::mem::take(&mut self.items[self.count + 1]); // Move last to root
+            self.bubble_down(1);
+        }
+        Some(result)
+    }
+
+    fn bubble_down(&mut self, idx: usize) {
+        let mut current_idx = idx;
+        while self.left_child_idx(current_idx) <= self.count {
+            let smaller_child_idx = self.smallest_child_idx(current_idx);
+            if (self.comparator)(&self.items[smaller_child_idx], &self.items[current_idx]) {
+                self.items.swap(current_idx, smaller_child_idx);
+                current_idx = smaller_child_idx;
+            } else {
+                break;
+            }
+        }
+    }
+
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+
+        if right <= self.count && (self.comparator)(&self.items[right], &self.items[left]) {
+            right
+        } else {
+            left
+        }
     }
 }
 
@@ -85,7 +136,7 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		self.remove()
     }
 }
 

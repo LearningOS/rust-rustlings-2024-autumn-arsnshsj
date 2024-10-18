@@ -3,10 +3,20 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+
+fn sort<T>(array: &mut [T])
+where
+    T: PartialOrd,
+{
+    let length = array.len();
+    for i in 1..length {
+        let mut j = i;
+        while j > 0 && array[j] < array[j - 1] {
+            array.swap(j, j - 1); // 交换元素
+            j -= 1; // 向前移动
+        }
+    }
 }
 #[cfg(test)]
 mod tests {
